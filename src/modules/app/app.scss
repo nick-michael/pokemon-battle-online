@@ -17,6 +17,12 @@
   border-radius: 20px;
   border: 15px solid black;
   background-color: var(--off-white);
+  position: relative;
+}
+
+.readable {
+  max-width: 600px;
+  width: 100%;
 }
 
 .button {
@@ -25,6 +31,8 @@
   border-radius: 8px;
   user-select: none;
   font-size: 1.2em;
+  width: fit-content;
+  margin: auto;
 
   &__container {
     display: flex;
@@ -52,12 +60,12 @@
   }
 }
 
-.primarytext {
+.primary-text {
   color: var(--blue-mid);
   font-size: 1.2em;
 }
 
-.subtext--light-bg {
+.sub-text {
   color: var(--grey-mid);
   font-size: 0.9em;
 }
