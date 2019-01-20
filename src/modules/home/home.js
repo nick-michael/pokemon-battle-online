@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase/app';
 
-import { TextField } from '../../common/components/form-fields';
+import { TextField } from '../../common/components/form-fields/form-fields';
 
 const displayNameRegex = /^[a-zA-Z0-9 ]{3,16}$/;
 

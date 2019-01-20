@@ -4,7 +4,7 @@ import firebase from 'firebase/app';
 
 import logo from '../../pokemon-battle-online-logo.png';
 import { errors as firebaseErros } from '../../common/constants/firebase-errors';
-import { TextField } from '../../common/components/form-fields';
+import { TextField } from '../../common/components/form-fields/form-fields';
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 

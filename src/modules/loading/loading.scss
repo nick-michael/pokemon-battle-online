@@ -1,93 +1,72 @@
 
 .loading {
-    &__container {
-        z-index: 1000000;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--off-white);
-    }
-
-    &__ball, &__center {
-        border-radius: 100%;
-        border: 5px solid black;
-        top: 50%;
-        left: 50%;
-        position: absolute;
-        transform-origin: 50% 100%;
-        transform: translate(-50%, -50%);
-    }
-
-    &__ball {
-        background-image: linear-gradient(var(--red-pokemon) 49%, black 49%, black 51%, white 51% );
-        width: 15em;
-        height: 15em;
-        animation: wobble 1.8s linear infinite;
-    }
-
-    &__center {
-      background: var(--off-white);
-      width: 5em;
-      height: 5em;
-    }
-  
-  
-    // &::before, &::after {
-    //   content: '';
-    //   display: inherit;
-      
-    //   transform-origin: 50% 100%;
-    //   transform: translate(-50%, -50%);
-    // }
-    // &::before {
-    //   background-image: linear-gradient(var(--red-pokemon) 49%, black 49%, black 51%, white 51% );
-    //   width: 20em;
-    //   height: 20em;
-    //   animation: wobble 1.8s linear infinite;
-    // }
-  
-    &::after {
-      background: var(--off-white);
-      width: 5em;
-      height: 5em;
-    }
+  &__container {
+    z-index: 1000000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--off-white);
   }
-  
-  @keyframes wobble {
-    0% {
-      transform: translate(-50%, -50%) rotate(5deg);
-    }
-    5% {
-      transform: translate(-50%, -50%) rotate(-5deg);
-    }
-    10% {
-      transform: translate(-50%, -50%) rotate(5deg);
-    }
-    15% {
-      transform: translate(-50%, -50%) rotate(-5deg);
-    }
-    20% {
-      transform: translate(-50%, -50%) rotate(5deg);
-    }
-    25% {
-      transform: translate(-50%, -50%) rotate(-5deg);
-    }
-    30% {
-      transform: translate(-50%, -50%) rotate(5deg);
-    }
-    35% {
-      transform: translate(-50%, -50%) rotate(-5deg);
-    }
-    40% {
-      transform: translate(-50%, -50%) rotate(5deg);
-    }
-    45% {
-      transform: translate(-50%, -50%) rotate(-5deg);
-    }
-    50% {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
+
+  &__ball, &__center {
+    border-radius: 100%;
+    border: 5px solid black;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform-origin: 50% 100%;
+    transform: translate(-50%, -50%);
   }
+
+  &__ball {
+    background-image: linear-gradient(var(--red-pokemon) 49%, black 49%, black 51%, white 51% );
+    width: 15em;
+    height: 15em;
+    animation: wobble 1.8s linear infinite;
+  }
+
+  &__center {
+    background: var(--off-white);
+    width: 5em;
+    height: 5em;
+  }
+}
+  
+@keyframes wobble {
+  0% {
+    transform: translate(-50%, -50%) rotate(5deg);
+  }
+  5% {
+    transform: translate(-50%, -50%) rotate(-5deg);
+  }
+  10% {
+    transform: translate(-50%, -50%) rotate(5deg);
+  }
+  15% {
+    transform: translate(-50%, -50%) rotate(-5deg);
+  }
+  20% {
+    transform: translate(-50%, -50%) rotate(5deg);
+  }
+  25% {
+    transform: translate(-50%, -50%) rotate(-5deg);
+  }
+  30% {
+    transform: translate(-50%, -50%) rotate(5deg);
+  }
+  35% {
+    transform: translate(-50%, -50%) rotate(-5deg);
+  }
+  40% {
+    transform: translate(-50%, -50%) rotate(5deg);
+  }
+  45% {
+    transform: translate(-50%, -50%) rotate(-5deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}
   
