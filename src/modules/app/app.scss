@@ -3,8 +3,8 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: var(--page-background);
-  background-image: linear-gradient(var(--red-pokemon) 49%, black 49%, black 51%, white 51% );
+  background-color: $page-background;
+  background-image: linear-gradient($red-pokemon 49%, black 49%, black 51%, white 51% );
 }
 
 .poke-container {
@@ -16,7 +16,7 @@
   height: 90%;
   border-radius: 20px;
   border: 15px solid black;
-  background-color: var(--off-white);
+  background-color: $off-white;
   position: relative;
 }
 
@@ -25,53 +25,18 @@
   width: 100%;
 }
 
-.button {
-  padding: 5px 10px;
-  border: 2px solid;
-  border-radius: 8px;
-  user-select: none;
-  font-size: 1.2em;
-  width: fit-content;
-  margin: auto;
-
-  &__container {
-    display: flex;
-    width: 70%;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-  }
-
-  &--primary {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: white;
-  }
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &--disabled {
-    background: var(--grey-mid);
-    border-color: var(--grey-mid);
-    &:hover {
-      opacity: 1;
-    }
-  }
-}
-
 .primary-text {
-  color: var(--blue-mid);
+  color: $blue-mid;
   font-size: 1.2em;
 }
 
 .sub-text {
-  color: var(--grey-mid);
+  color: $grey-mid;
   font-size: 0.9em;
 }
 
 .error-text {
-  color: var(--red-error);
+  color: $red-error;
   font-size: 1em;
   padding: 5px 0;
   visibility: hidden;

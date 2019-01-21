@@ -2,7 +2,7 @@
   display: flex;
   padding: 20px 10px;
   flex-direction: column;
-  background: var(--off-white);
+  background: $off-white;
   width: 90%;
   max-width: 500px;
   justify-content: center;
@@ -19,7 +19,7 @@
   };
 
   &__title {
-    color: var(--color-primary);
+    color: $color-primary;
     font-size: 1.5em;
     text-transform: uppercase;
     margin-bottom: 10px;

@@ -1,0 +1,56 @@
+.button {
+  padding: 5px 10px;
+  border: 2px solid;
+  border-radius: 8px;
+  font-size: 1.2em;
+  width: fit-content;
+  margin: auto;
+
+  &__container {
+    display: flex;
+    width: 70%;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+  }
+
+  &--primary {
+    background: $color-primary;
+    border-color: $color-primary;
+    color: white;
+
+    &:hover {
+      background: tint($color-primary, 10%);
+      border-color: tint($color-primary, 10%);
+    }
+
+    &.button--clicked:not(.button--disabled) {
+      background: shade($color-primary, 10%);
+      border-color: shade($color-primary, 10%);
+    }
+  }
+
+  &--secondary {
+    background: $off-white;
+    border-color: $color-primary;
+    color: $color-primary;
+
+    &:hover {
+      background: tint($off-white, 70%);
+      border-color: tint($color-primary, 10%);
+    }
+
+    &.button--clicked:not(.button--disabled) {
+      background: shade($off-white, 10%);
+      border-color: shade($color-primary, 10%);
+    }
+  }
+
+  &--disabled {
+    background: $grey-mid;
+    border-color: $grey-mid;
+    &:hover {
+      background: $grey-mid;
+      border-color: $grey-mid;
+    }
+  }
+}

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import firebase from 'firebase/app';
 
 import { TextField } from '../../common/components/form-fields/form-fields';
+import { PrimaryButton } from '../../common/components/buttons/buttons';
 
 const displayNameRegex = /^[a-zA-Z0-9 ]{3,16}$/;
 
@@ -58,9 +59,7 @@ class DisplayNameModal extends Component {
           validator={this.validateDisplayName}
           ref={this.usernameFieldRef}
         />
-        <div className="button button--primary" onClick={this.setDisplayName}>
-          Submit
-        </div>
+        <PrimaryButton onClick={this.setDisplayName} label="Submit" />
       </div>
     );
   }
@@ -88,13 +87,11 @@ export class Home extends Component {
         {!displayName ? (
           <DisplayNameModal refreshUserProfile={this.refreshUserProfile} />
         ) : (
-          <div
-            className="button button--primary"
+          <PrimaryButton
             style={{ position: 'absolute', right: '10px', top: '10px' }}
             onClick={() => firebase.auth().signOut()}
-          >
-            Log Out
-          </div>
+            label="Log Out"
+          />
         )}
       </div>
     );

@@ -7,7 +7,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--off-white);
+    background: $off-white;
   }
 
   &__ball, &__center {
@@ -21,14 +21,14 @@
   }
 
   &__ball {
-    background-image: linear-gradient(var(--red-pokemon) 49%, black 49%, black 51%, white 51% );
+    background-image: linear-gradient($red-pokemon 49%, black 49%, black 51%, white 51% );
     width: 15em;
     height: 15em;
     animation: wobble 1.8s linear infinite;
   }
 
   &__center {
-    background: var(--off-white);
+    background: $off-white;
     width: 4em;
     height: 4em;
   }

@@ -12,29 +12,29 @@
         transform: translateX(-50%);
         top: 0.2em;
         font-size: 0.7em;
-        border-color: var(--grey-mid);
+        border-color: $grey-mid;
       }
     }
 
     &--focussed {
       .form__label {
-        color: var(--color-primary);
+        color: $color-primary;
       }
 
       .form__input {
-        border: 2px solid var(--color-primary);
-        color: var(--color-primary);
+        border: 2px solid $color-primary;
+        color: $color-primary;
       }
     }
 
     &--errored {
       .form__label {
-        color: var(--red-error);
+        color: $red-error;
       }
 
       .form__input {
-        border: 2px solid var(--red-error);
-        color: var(--red-error);
+        border: 2px solid $red-error;
+        color: $red-error;
       }
 
       .form__error {
@@ -50,7 +50,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     pointer-events: none;
-    color: var(--grey-mid);
+    color: $grey-mid;
     background-color: white;
     padding: 2px;
     border-radius: 5px;
@@ -65,8 +65,8 @@
     height: 100%;
     font-size: 1em;
     padding: 0 10px;
-    border: 2px solid var(--grey-mid);
-    color: var(--grey-mid);
+    border: 2px solid $grey-mid;
+    color: $grey-mid;
     border-radius: 8px;
     transition: all 0.4s;
     &:focus {
@@ -75,7 +75,7 @@
   }
 
   &__error {
-    color: var(--red-error);
+    color: $red-error;
     font-size: 0.6em;
     padding: 5px 0;
     visibility: hidden;
@@ -88,12 +88,12 @@
 
 .form__item--shifted.form__item--errored  {
   & > .form__label {
-    border-color: var(--red-error);
+    border-color: $red-error;
   }
 }
 
 .form__item--shifted.form__item--focussed  {
   & > .form__label {
-    border-color: var(--color-primary);
+    border-color: $color-primary;
   }
 }

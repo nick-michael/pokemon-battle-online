@@ -5,6 +5,7 @@ import firebase from 'firebase/app';
 import logo from '../../pokemon-battle-online-logo.png';
 import { errors as firebaseErros } from '../../common/constants/firebase-errors';
 import { TextField } from '../../common/components/form-fields/form-fields';
+import { PrimaryButton } from '../../common/components/buttons/buttons';
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -212,23 +213,18 @@ export class Login extends Component {
       subtext = [],
     } = this.forms[type];
     const { isFormValid } = this.state;
-    const buttonClassNames = classNames('button button--primary', {
-      'button--disabled': !isFormValid,
-    });
     const errorClassNames = classNames('error-text', {
       'error-text--show': Boolean(error),
     });
     return (
       <div className="form__container">
         <div className="form">
-          <img src={logo} className="form__logo" alt="logo" />
+          <img src={logo} className="form__logo" alt="logo" draggable="false" />
           <br />
           {this.buildFields()}
           <div className={errorClassNames}>{firebaseErros[error] || 'Something went wrong, please Try again.'}</div>
           <br />
-          <div className={buttonClassNames} onClick={() => this.handleCta(action)}>
-            {label}
-          </div>
+          <PrimaryButton onClick={() => this.handleCta(action)} disabled={!isFormValid} label={label} />
           <br />
           {subtext.map(({ action: linkAction, key, label: subtextLabel, link }) => (
             <Fragment key={key}>

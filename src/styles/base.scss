@@ -1,5 +1,6 @@
 @import "reset.scss";
 @import "variables.scss";
+@import "../common/components/buttons/buttons.scss";
 @import "../common/components/form-fields/form-fields.scss";
 @import "../modules/app/app.scss";
 @import "../modules/loading/loading.scss";
@@ -25,6 +26,7 @@ body {
   left: 0;
   right: 0;
   overflow: hidden;
+  user-select: none;
 }
 
 * {
@@ -34,4 +36,12 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
   monospace;
+}
+
+@function tint($color, $percentage) {
+  @return mix(white, $color, $percentage);
+}
+
+@function shade($color, $percentage) {
+  @return mix(black, $color, $percentage);
 }

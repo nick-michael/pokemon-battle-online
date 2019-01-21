@@ -7,8 +7,9 @@ import * as routes from '../../common/constants/routes';
 import { Loading } from '../loading/loading';
 import { Login } from '../login/login';
 import { Home } from '../home/home';
+import { PrimaryButton, SecondaryButton } from '../../common/components/buttons/buttons';
 
-const Verify = ({ email }) => (
+const Verify = ({ email, handleRefreshVerified }) => (
   <div className="poke-container">
     <div className="primary-text">Please verify your email address and refresh this page.</div>
     <br />
@@ -16,22 +17,24 @@ const Verify = ({ email }) => (
     <br />
     <br />
     <div className="button__container">
-      <div className="button button--primary" onClick={() => firebase.auth().currentUser.sendEmailVerification()}>
-        Re-Send Verification Email
-      </div>
-      <div
+      <PrimaryButton className="button button--primary" onClick={handleRefreshVerified} label="Refresh" />
+      <SecondaryButton
         className="button button--primary"
+        onClick={() => firebase.auth().currentUser.sendEmailVerification()}
+        label="Re-Send Verification Email"
+      />
+      <PrimaryButton
         style={{ position: 'absolute', right: '10px', top: '10px' }}
         onClick={() => firebase.auth().signOut()}
-      >
-        Log Out
-      </div>
+        label="Log Out"
+      />
     </div>
   </div>
 );
 
 Verify.propTypes = {
   email: PropTypes.string.isRequired,
+  handleRefreshVerified: PropTypes.func.isRequired,
 };
 
 class App extends Component {
@@ -64,6 +67,18 @@ class App extends Component {
     });
   }
 
+  handleRefreshVerified = () => {
+    firebase
+      .auth()
+      .currentUser.reload()
+      .then(() => {
+        if (firebase.auth().currentUser.emailVerified) {
+          this.setState({ route: routes.HOME, loading: false });
+        }
+      })
+      .catch(console.log);
+  };
+
   getContent = () => {
     const { route } = this.state;
     switch (route) {
@@ -72,7 +87,7 @@ class App extends Component {
       case routes.LOGIN:
         return <Login />;
       case routes.VERIFY:
-        return <Verify email={firebase.auth().currentUser.email} />;
+        return <Verify email={firebase.auth().currentUser.email} handleRefreshVerified={this.handleRefreshVerified} />;
       default:
         return <Loading />;
     }
