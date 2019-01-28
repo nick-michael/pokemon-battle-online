@@ -5,7 +5,7 @@ import firebase from 'firebase/app';
 import logo from '../../pokemon-battle-online-logo.png';
 import { errors as firebaseErros } from '../../common/constants/firebase-errors';
 import { TextField } from '../../common/components/form-fields/form-fields';
-import { PrimaryButton } from '../../common/components/buttons/buttons';
+import { Button } from '../../common/components/buttons/buttons';
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -224,13 +224,13 @@ export class Login extends Component {
           {this.buildFields()}
           <div className={errorClassNames}>{firebaseErros[error] || 'Something went wrong, please Try again.'}</div>
           <br />
-          <PrimaryButton onClick={() => this.handleCta(action)} disabled={!isFormValid} label={label} />
+          <Button onClick={() => this.handleCta(action)} disabled={!isFormValid} label={label} />
           <br />
           {subtext.map(({ action: linkAction, key, label: subtextLabel, link }) => (
             <Fragment key={key}>
-              <div className="sub-text">
+              <div className="text--grey-mid size--0.9">
                 {subtextLabel}{' '}
-                <span className="link--light-bg" onClick={linkAction}>
+                <span className="link" onClick={linkAction}>
                   {link}
                 </span>
               </div>

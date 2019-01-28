@@ -2,9 +2,11 @@
 @import "variables.scss";
 @import "../common/components/buttons/buttons.scss";
 @import "../common/components/form-fields/form-fields.scss";
+@import "../common/components/pokemon/pokemon.scss";
 @import "../modules/app/app.scss";
 @import "../modules/loading/loading.scss";
 @import "../modules/login/login.scss";
+@import "../modules/lobby/lobby.scss";
 
 body {
   margin: 0;

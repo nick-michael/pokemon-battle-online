@@ -1,0 +1,38 @@
+.swiper {
+  width: 110%;
+  height: 110%;
+  position: absolute;
+  z-index: 100;
+  pointer-events: none;
+
+  &::before, &::after {
+    content: '';
+    width: 100%;
+    height: 50%;
+    position: absolute;
+    display: block;
+    transition: transform 0.3s linear;
+  }
+
+  &::before {
+    background: $red-pokemon;
+    top: 0;
+    transform: translateY(-110%);
+    background: linear-gradient(to top, black 6px, $red-pokemon 6px);
+    border-bottom: 2px solid black;
+  }
+
+  &::after {
+    background: linear-gradient(black 6px, white 6px);
+    bottom: 0;
+    transform: translateY(110%);
+    border-top: 2px solid black;
+  }
+
+  &--closed {
+    pointer-events: all;
+    &::before, &::after {
+      transform: translateY(0%);
+    }
+  }
+}

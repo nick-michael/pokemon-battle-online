@@ -2,13 +2,11 @@
   display: flex;
   padding: 20px 10px;
   flex-direction: column;
-  background: $off-white;
   width: 90%;
   max-width: 500px;
   justify-content: center;
   align-items: center;
   border-radius: 20px;
-  border: 15px solid black;
 
   &__container {
     width: 100%;

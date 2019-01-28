@@ -1,46 +1,21 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import firebase from 'firebase/app';
+// import _throttle from 'lodash.throttle';
 import 'firebase/auth';
+import 'firebase/firestore';
 
 import * as routes from '../../common/constants/routes';
+import { VerifyEmail } from '../verify-email/verify-email';
 import { Loading } from '../loading/loading';
 import { Login } from '../login/login';
 import { Home } from '../home/home';
-import { PrimaryButton, SecondaryButton } from '../../common/components/buttons/buttons';
-
-const Verify = ({ email, handleRefreshVerified }) => (
-  <div className="poke-container">
-    <div className="primary-text">Please verify your email address and refresh this page.</div>
-    <br />
-    <div className="sub-text">({email})</div>
-    <br />
-    <br />
-    <div className="button__container">
-      <PrimaryButton className="button button--primary" onClick={handleRefreshVerified} label="Refresh" />
-      <SecondaryButton
-        className="button button--primary"
-        onClick={() => firebase.auth().currentUser.sendEmailVerification()}
-        label="Re-Send Verification Email"
-      />
-      <PrimaryButton
-        style={{ position: 'absolute', right: '10px', top: '10px' }}
-        onClick={() => firebase.auth().signOut()}
-        label="Log Out"
-      />
-    </div>
-  </div>
-);
-
-Verify.propTypes = {
-  email: PropTypes.string.isRequired,
-  handleRefreshVerified: PropTypes.func.isRequired,
-};
+import { Lobby } from '../lobby/lobby';
 
 class App extends Component {
   state = {
     route: undefined,
-    loading: true,
+    transition: false,
+    lobbyId: undefined,
   };
 
   componentDidMount() {
@@ -55,14 +30,15 @@ class App extends Component {
     firebase.initializeApp(config);
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
+        console.log(firebase.auth().currentUser);
         // firebase.auth().currentUser.delete();
         if (!user.emailVerified) {
-          this.setState({ route: routes.VERIFY, loading: false });
+          this.goTo(routes.VERIFY);
         } else {
-          this.setState({ route: routes.HOME, loading: false });
+          this.goTo(routes.HOME);
         }
       } else {
-        this.setState({ route: routes.LOGIN, loading: false });
+        this.goTo(routes.LOGIN);
       }
     });
   }
@@ -79,15 +55,32 @@ class App extends Component {
       .catch(console.log);
   };
 
+  goTo = route => {
+    this.setState({ transition: true }, () => {
+      setTimeout(() => this.setState({ route, transition: false }), 400);
+    });
+  };
+
+  joinLobby = lobbyId => {
+    this.setState({ lobbyId }, () => this.goTo(routes.LOBBY));
+  };
+
   getContent = () => {
-    const { route } = this.state;
+    const { route, lobbyId } = this.state;
     switch (route) {
       case routes.HOME:
-        return <Home />;
+        return <Home goTo={this.goTo} joinLobby={this.joinLobby} />;
+      // return <Lobby lobbyId={'MlLFKYQhR6r8gA08xJlI'} />;
+      // return <Login />;
+      // return <SelectPartyPokemon />;
       case routes.LOGIN:
         return <Login />;
+      case routes.LOBBY:
+        return <Lobby lobbyId={lobbyId} />;
       case routes.VERIFY:
-        return <Verify email={firebase.auth().currentUser.email} handleRefreshVerified={this.handleRefreshVerified} />;
+        return (
+          <VerifyEmail email={firebase.auth().currentUser.email} handleRefreshVerified={this.handleRefreshVerified} />
+        );
       default:
         return <Loading />;
     }
@@ -96,8 +89,10 @@ class App extends Component {
   render() {
     return (
       <div className="app">
-        {this.state.loading && <Loading />}
-        {this.getContent()}
+        <div className="poke-container">
+          <div className={`swiper ${this.state.transition ? 'swiper--closed' : ''}`} />
+          {this.getContent()}
+        </div>
       </div>
     );
   }

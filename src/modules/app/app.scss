@@ -1,10 +1,17 @@
+@import "./swiper.scss";
+
 .app {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
   background-color: $page-background;
-  background-image: linear-gradient($red-pokemon 49%, black 49%, black 51%, white 51% );
+  background-image: linear-gradient(
+    $red-pokemon calc(50% - 6px),
+    black calc(50% - 6px),
+    black calc(50% + 6px),
+    white calc(50% + 6px)
+  );
 }
 
 .poke-container {
@@ -15,9 +22,11 @@
   width: 90%;
   height: 90%;
   border-radius: 20px;
-  border: 15px solid black;
+  border: 12px solid black;
   background-color: $off-white;
   position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
 }
 
 .readable {
@@ -25,14 +34,9 @@
   width: 100%;
 }
 
-.primary-text {
-  color: $blue-mid;
-  font-size: 1.2em;
-}
-
-.sub-text {
-  color: $grey-mid;
-  font-size: 0.9em;
+.link {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .error-text {
@@ -46,7 +50,38 @@
   }
 }
 
-.link--light-bg {
-  text-decoration: underline;
-  cursor: pointer;
+@each $key,$val in $type-colors {
+  .text--#{$key} {
+    color: shade($val, 20%);
+  }
+
+  .badge--#{$key} {
+    color: white;
+    display: inline-block;
+    background: $val;
+    text-align: center;
+    padding: 3px;
+    border-radius: 5px;
+    text-shadow: -1px -1px 0 shade($val, 40%), 1px -1px 0 shade($val, 40%), -1px 1px 0 shade($val, 40%), 1px 1px 0 shade($val, 40%);
+    letter-spacing: 1px;
+    text-transform: capitalize;
+  }
+}
+
+@each $key,$val in $stat-colors {
+  .text--#{$key} {
+    color: shade($val, 20%);
+  }
+}
+
+@each $key,$val in $app-colors {
+  .text--#{$key} {
+    color: $val;
+  }
+}
+
+@each $key,$val in $sizes {
+  .size--#{$key} {
+    font-size: $val;
+  }
 }

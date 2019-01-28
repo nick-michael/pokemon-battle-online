@@ -1,0 +1,86 @@
+.party-pokemon {
+  &__pokemon {
+    &__image {
+      z-index: 1;
+      object-fit: contain;
+      width: 120px;
+    }
+
+    &__name {
+      color: $grey-mid;
+      z-index: 1;
+      font-weight: bold;
+      transition: color 0.4s;
+    }
+  }
+
+  &__details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    grid-column: 1/-1;
+    background-image: linear-gradient(#888, #EEE 2.5%, #EEE 97.5%, #888);
+
+    &__col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 150px;
+      width: min-content;
+      padding: 20px;
+      white-space: nowrap;
+    }
+
+    &__stats {
+      text-align: right;
+      padding: 5px 0;
+      font-weight: bold;
+    }
+
+    &__moves {
+      text-transform: capitalize;
+      text-align: left;
+      padding: 5px 0;
+      font-weight: bold;
+    }
+  }
+
+  &__confirm {
+    display: flex;
+    padding: 20px 0;
+    justify-content: space-around;
+    border-top: 8px solid $blue-dark;
+    background: $blue-mid;
+    width: 100%;
+    position: absolute;
+    z-index: 10;
+    bottom: 0;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+    
+    &--active {
+      transform: translateY(0);
+    }
+    &__button-container {
+      display: flex;
+    }
+  }
+}
+
+.party-grid {
+  &__pokemon {
+    &--selected {
+      &::before {
+        position: absolute;
+        content: '';
+        width: 10px;
+        height: 10px;
+        bottom: 0;
+        left: 50%;transform: translate(-50%, 50%) rotate(45deg) skew(10deg, 10deg);
+        background: #888;
+        background-image: linear-gradient(to bottom right, #555, #888 50%);
+        z-index: -1;
+      }
+    }
+  }
+}

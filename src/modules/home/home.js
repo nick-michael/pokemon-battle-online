@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase/app';
 
 import { TextField } from '../../common/components/form-fields/form-fields';
-import { PrimaryButton } from '../../common/components/buttons/buttons';
+import { Button } from '../../common/components/buttons/buttons';
+import { createLobby, joinLobby } from '../../common/utils/firebase';
 
 const displayNameRegex = /^[a-zA-Z0-9 ]{3,16}$/;
 
@@ -49,8 +50,8 @@ class DisplayNameModal extends Component {
   render() {
     return (
       <div className="readable">
-        <div className="primary-text">Choose A Username</div>
-        <div className="sub-text">(You can change this at any time)</div>
+        <div className="text--blue-mid size--1.2">Choose A Username</div>
+        <div className="text--grey-mid size--0.9">(You can change this at any time)</div>
         <br />
         <TextField
           label="Username"
@@ -59,7 +60,7 @@ class DisplayNameModal extends Component {
           validator={this.validateDisplayName}
           ref={this.usernameFieldRef}
         />
-        <PrimaryButton onClick={this.setDisplayName} label="Submit" />
+        <Button onClick={this.setDisplayName} label="Submit" />
       </div>
     );
   }
@@ -78,22 +79,48 @@ export class Home extends Component {
     this.setState({ userProfile: firebase.auth().currentUser });
   };
 
+  handleCreateLobby = () => {
+    createLobby()
+      .then(({ data: { lobbyId } }) => {
+        this.props.joinLobby(lobbyId);
+      })
+      .catch(console.log);
+  };
+
+  handleJoinLobby = () => {
+    joinLobby('MlLFKYQhR6r8gA08xJlI')
+      .then(({ data: { lobbyId } }) => {
+        // this.props.joinLobby(lobbyId);
+        this.props.joinLobby('MlLFKYQhR6r8gA08xJlI');
+      })
+      .catch(console.log);
+  };
+
   render() {
     const {
       userProfile: { displayName },
     } = this.state;
     return (
-      <div className="poke-container">
+      <Fragment>
         {!displayName ? (
           <DisplayNameModal refreshUserProfile={this.refreshUserProfile} />
         ) : (
-          <PrimaryButton
-            style={{ position: 'absolute', right: '10px', top: '10px' }}
-            onClick={() => firebase.auth().signOut()}
-            label="Log Out"
-          />
+          <Fragment>
+            <Button
+              style={{ position: 'absolute', right: '10px', top: '10px' }}
+              onClick={() => firebase.auth().signOut()}
+              label="Log Out"
+            />
+            <Button onClick={() => this.handleCreateLobby()} label="Create Lobby" />
+            <Button onClick={() => this.handleJoinLobby()} label="Join Lobby" />
+          </Fragment>
         )}
-      </div>
+      </Fragment>
     );
   }
 }
+
+Home.propTypes = {
+  goTo: PropTypes.func.isRequired,
+  joinLobby: PropTypes.func.isRequired,
+};

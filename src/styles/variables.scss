@@ -1,10 +1,104 @@
+// App Colors
 $off-white: #EEE;
+$grey-light: #CCC;
 $grey-mid: #777;
-$cyan-mid: #19A397;
 $blue-mid: #3565AE;
+$blue-dark: #24467a;
 $yellow-mid: #FFCA39;
+$yellow-dark: #B68500;
+$green-mid: #52ae33;
+$green-dark: #1e631c;
+$red-mid: #ae3333;
+$red-dark: #631c1c;
 $red-error: #E55;
 $red-pokemon: #F04037;
+
+$app-colors: (
+  off-white: $off-white,
+  grey-light: $grey-light,
+  grey-mid: $grey-mid,
+  blue-mid: $blue-mid,
+  blue-dark: $blue-dark,
+  yellow-mid: $yellow-mid,
+  yellow-dark: $yellow-dark,
+  green-mid: $green-mid,
+  green-dark: $green-dark,
+  red-mid: $red-mid,
+  red-dark: $red-dark,
+  red-error: $red-error,
+  red-pokemon: $red-pokemon,
+);
+
+
+// Type Colors
+$type-normal: #A8A878;
+$type-fire: #F08030;
+$type-water: #6890F0;
+$type-grass: #78C850;
+$type-electric: #F8D030;
+$type-ice: #98D8D7;
+$type-fighting: #C03028;
+$type-poison: #A040A0;
+$type-ground: #E0C068;
+$type-flying: #A890F0;
+$type-psychic: #F85888;
+$type-bug: #A8B820;
+$type-rock: #B8A038;
+$type-ghost: #705898;
+$type-dragon: #7038F8;
+$type-dark: #705848;
+$type-steel: #B8B8D0;
+$type-fairy: #FF9BE1;
+
+$type-colors: (
+  normal: $type-normal,
+  fire: $type-fire,
+  water: $type-water,
+  grass: $type-grass,
+  electric: $type-electric,
+  ice: $type-ice,
+  fighting: $type-fighting,
+  poison: $type-poison,
+  ground: $type-ground,
+  flying: $type-flying,
+  psychic: $type-psychic,
+  bug: $type-bug,
+  rock: $type-rock,
+  ghost: $type-ghost,
+  dragon: $type-dragon,
+  dark: $type-dark,
+  steel: $type-steel,
+  fairy: $type-fairy,
+);
+
+
+// Pokemon Stat Colors
+$stat-hp: #FF5959;
+$stat-attack: #F5AC78;
+$stat-defense: #FAE078;
+$stat-special-attack: #9DB7F5;
+$stat-special-defense: #A7DB8D;
+$stat-speed: #FA92B2;
+
+$stat-colors: (
+  hp: $stat-hp,
+  attack: $stat-attack,
+  defense: $stat-defense,
+  special-attack: $stat-special-attack,
+  special-defense: $stat-special-defense,
+  speed: $stat-speed,
+);
+
+$sizes: (
+  0\.8: 0.8em,
+  0\.9: 0.9em,
+  1: 1em,
+  1\.2: 1.2em,
+  1\.4: 1.4em,
+  1\.6: 1.6em,
+  1\.8: 1.8em,
+  2: 2em,
+);
 
 $color-primary: $blue-mid;
 $page-background: $red-error;

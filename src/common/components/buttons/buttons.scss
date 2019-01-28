@@ -13,42 +13,60 @@
     flex-wrap: wrap;
   }
 
-  &--primary {
-    background: $color-primary;
-    border-color: $color-primary;
-    color: white;
+  &__outline {
+    @each $key,$val in $app-colors {
+      &--#{$key} {
+        border-color: $val;
 
-    &:hover {
-      background: tint($color-primary, 10%);
-      border-color: tint($color-primary, 10%);
-    }
+        &:hover {
+          border-color: tint($val, 10%);
+        }
 
-    &.button--clicked:not(.button--disabled) {
-      background: shade($color-primary, 10%);
-      border-color: shade($color-primary, 10%);
+        &.button--clicked:not(.button--disabled) {
+          border-color: shade($val, 10%);
+        }
+      }
     }
   }
 
-  &--secondary {
-    background: $off-white;
-    border-color: $color-primary;
-    color: $color-primary;
+  &__main {
+    @each $key,$val in $app-colors {
+      &--#{$key} {
+        background-color: $val;
 
-    &:hover {
-      background: tint($off-white, 70%);
-      border-color: tint($color-primary, 10%);
+        &:hover {
+          background-color: tint($val, 10%);
+        }
+
+        &.button--clicked:not(.button--disabled) {
+          background-color: shade($val, 10%);
+        }
+      }
     }
+  }
 
-    &.button--clicked:not(.button--disabled) {
-      background: shade($off-white, 10%);
-      border-color: shade($color-primary, 10%);
+  &__text {
+    @each $key,$val in $app-colors {
+      &--#{$key} {
+        color: $val;
+
+        &:hover {
+          color: tint($val, 10%);
+        }
+
+        &.button--clicked:not(.button--disabled) {
+          color: shade($val, 10%);
+        }
+      }
     }
   }
 
   &--disabled {
     background: $grey-mid;
     border-color: $grey-mid;
+    color: $off-white;
     &:hover {
+      color: $off-white;
       background: $grey-mid;
       border-color: $grey-mid;
     }
