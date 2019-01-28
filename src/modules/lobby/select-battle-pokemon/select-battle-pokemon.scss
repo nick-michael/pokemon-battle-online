@@ -10,41 +10,21 @@
     flex: 1;
     min-width: 300px;
     overflow-y: auto;
-    border-left-width: 8px;
-    border-left-style: solid;
 
-    &--team-0 {
-      border-left-style: none;
-      background: $green-mid;
-      border-color: $green-dark;
-  
-      .battle-pokemon__title {
-        color: $green-mid;
-        background: $green-dark;
-      }
-
-      .grid-pokemon__name {
-        color: $green-dark;
-      }
+    .battle-pokemon__title {
+      color: $off-white;
+      background: $grey-mid;
+      border-bottom: 6px solid black;
     }
 
-    &--team-1 {
-      background: $red-mid;
-      border-color: $red-dark;
-  
+    &--team-0 {
       .battle-pokemon__title {
-        color: $red-mid;
-        background: $red-dark;
-      }
-
-      .grid-pokemon__name {
-        color: $red-dark;
+        background: $purple-mid;
       }
     }
 
     &:not(:last-child) {
-      border-right-width: 8px;
-      border-right-style: solid;
+      border-right: 6px solid black;
     }
   }
 
@@ -65,8 +45,18 @@
 .battle-grid {
   &__pokemon {
     transition: filter 0.4s;
-    &--selected {
+    &--greyed {
       filter: grayscale(1);
+
+      .grid-pokemon__name {
+        color: $grey-mid;
+      }
+    }
+
+    &:hover:not(.battle-grid__pokemon--greyed) {
+      .grid-pokemon__name {
+        color: $purple-mid;
+      }
     }
   }
 }

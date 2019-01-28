@@ -34,7 +34,7 @@ export class SelectBattlePokemon extends Component {
 
   addBattlePokemon = id => {
     const { battlePokemon } = this.state;
-    if (!battlePokemon.includes(id)) {
+    if (battlePokemon.length < this.battleSize && !battlePokemon.includes(id)) {
       this.setState({ battlePokemon: [...battlePokemon, id] });
     }
   };
@@ -66,7 +66,7 @@ export class SelectBattlePokemon extends Component {
               const pokemon = pokemonData[pokemonId];
               const { id } = pokemon;
               const pokemonClassNames = classNames('battle-grid__pokemon', {
-                'battle-grid__pokemon--selected': isMyParty && battlePokemon.includes(id),
+                'battle-grid__pokemon--greyed': !isMyParty || battlePokemon.includes(id),
               });
 
               return (

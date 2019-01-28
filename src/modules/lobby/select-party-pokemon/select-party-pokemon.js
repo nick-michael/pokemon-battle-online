@@ -161,7 +161,12 @@ export class SelectPartyPokemon extends Component {
                     className={isSelectedPokemon ? 'party-grid__pokemon--selected' : ''}
                   />
                   {isSelectedPokemon ? (
-                    <PokemonDetails pokemon={pokemon} party={party} addPartyPokemon={this.addPartyPokemon} />
+                    <PokemonDetails
+                      pokemon={pokemon}
+                      party={party}
+                      addPartyPokemon={this.addPartyPokemon}
+                      partySize={this.partySize}
+                    />
                   ) : (
                     undefined
                   )}
