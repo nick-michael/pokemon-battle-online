@@ -14,184 +14,587 @@
 //   }
 // }
 
+// Category
+const PHYSICAL = 'physical';
+const SPECIAL = 'special';
+const STATUS = 'status';
+const NO_EFFECT = 'no-effect';
+
+// Semi Invulnerable States
+const BOUNCE = 'bounce';
+const DIG = 'dig';
+const DIVE = 'dive';
+const FLY = 'fly';
+const PHANTOM_FORCE = 'phantom-force';
+const SHADOW_FORCE = 'shadow-force';
+const SKY_DROP = 'sky-drop';
+
+// Weather
+const CLEAR = 'clear';
+const HARSH_SUNLIGHT = 'harsh-sunlight';
+const RAIN = 'rain';
+const SANDSTORM = 'sandstorm';
+const HAIL = 'hail';
+const SHADOWY_AURA = 'shadowy-aura';
+const FOG = 'fog';
+
+// Status Conditions
+
+// Persist through swaps
+const nonVolatile = {
+  BURN: 'burn',
+  FREEZE: 'freeze',
+  PARALYSIS: 'paralysis',
+  POISON: 'poison',
+  BADLY_POISONED: 'badly-poisoned',
+  SLEEP: 'sleep',
+  FAINTED: 'fainted',
+};
+
+// Do not persist through swaps
+const volatile = {
+  BOUND: 'bound',
+  CANT_ESCAPE: 'cant-escape',
+  CONFUSION: 'confusion',
+  CURSE: 'curse',
+  EMBARGO: 'embargo',
+  ENCORE: 'encore',
+  FLINCH: 'flinch',
+  HEAL_BLOCK: 'heal-block',
+  IDENTIFIED: 'identified',
+  LEECH_SEED: 'leech-seed',
+  NIGHTMARE: 'nightmare',
+  PERISH_SONG: 'perish-song',
+  TAUNT: 'taunt',
+  TELEKINESIS: 'telekinesis',
+  TORMENT: 'torment',
+  // Unofficial locked state
+  LOCKED: 'locked',
+};
+
 export const moves = {
   thunder: {
+    key: 'thunder',
     name: 'Thunder',
     pp: '10',
     power: '120',
     accuracy: '70',
-    description: 'Strongest of all ELECTRIC-type attacks. Has a one-in-ten shot at paralyzing the target.',
+    description: 'Strongest of all ELECTRIC-type attacks. Has a 30 percent chance at paralyzing the target.',
     type: 'electric',
+    hits: [BOUNCE, FLY, SKY_DROP],
+    category: SPECIAL,
+    conditionals: [
+      {
+        weather: RAIN,
+        override: {
+          accuracy: { 
+            value: '1000'
+          },
+        }
+      },
+      {
+        weather: HARSH_SUNLIGHT,
+        override: {
+          accuracy: {
+            scale: '0.5',
+          }
+        }
+      }
+    ],
+    effects: [
+      {
+        onHit: true,
+        probability: '30',
+        opponent: {
+          status: { 
+            nonVolatile: nonVolatile.PARALYSIS
+          },
+        },
+      }
+    ]
   },
   selfdestruct: {
+    key: 'selfdestruct',
     name: 'Selfdestruct',
     pp: '5',
-    power: '200',
+    power: '400',
     accuracy: '100',
     description: 'The user explodes, damaging the enemy, then faints. Useless against the GHOST type.',
     type: 'normal',
+    category: PHYSICAL,
+    conditionals: [
+      {
+        opponent: {
+          is: {
+            type: 'ghost',
+          }
+        },
+        override: {
+          category: NO_EFFECT
+        }
+      }
+    ],
+    effects: [
+      {
+        onHit: true,
+        self: {
+          status: {
+            nonVolatile: nonVolatile.FAINTED
+          },
+        }
+      }
+    ]
   },
   'mirror-coat': {
+    key: 'mirror-coat',
     name: 'Mirror Coat',
     pp: '20',
     power: '--',
     accuracy: '100',
     description: 'The foe will receive double the damage the user sustained from a special attack. High accuracy.',
     type: 'psychic',
+    disableStab: true,
+    disableTypeEffect: true,
+    category: NO_EFFECT,
+    conditionals: [
+      {
+        turn: {
+          took: {
+            category: SPECIAL,
+          }
+        },
+        override: {
+          category: SPECIAL,
+          damage: {
+            key: 'turn.took.damage',
+            scale: '2',
+          }
+        }
+      }
+    ],
   },
   'rain-dance': {
+    key: 'rain-dance',
     name: 'Rain Dance',
     pp: '5',
     power: '--',
     accuracy: '90',
     description: 'Summons rain for five turns. While it is raining, the power of WATER-type moves increases.',
     type: 'water',
+    category: STATUS,
+    effects: [
+      {
+        weather: RAIN,
+        duration: 5,
+      }
+    ]
   },
   swift: {
+    key: 'swift',
     name: 'Swift',
     pp: '20',
     power: '60',
-    accuracy: '100',
+    accuracy: '1000',
     description: 'A NORMAL-type attack. It is highly accurate, so it can be counted on to inflict damage.',
     type: 'normal',
+    category: PHYSICAL,
   },
   sonicboom: {
+    key: 'sonicboom',
     name: 'SonicBoom',
     pp: '20',
     power: '20',
+    damage: '20',
     accuracy: '90',
     description: 'A NORMAL-type attack. It always inflicts a set amount of damage.',
     type: 'normal',
+    category: PHYSICAL,
   },
   flash: {
+    key: 'flash',
     name: 'Flash',
     pp: '20',
     power: '--',
     accuracy: '70',
     description: "Blinds the target with a bright flash of light, reducing the  opponent's accuracy.",
     type: 'normal',
+    category: PHYSICAL,
+    effects: [
+      {
+        stages: {
+          accuracy: {
+            value: '1',
+            type: 'decrease',
+          }
+        }
+      }
+    ],
   },
   psychic: {
+    key: 'psychic',
     name: 'Psychic',
     pp: '10',
     power: '90',
     accuracy: '100',
     description: "A PSYCHIC-type attack. Has a one-in-ten chance of lowering the target's SPCL.DEF rating.",
     type: 'psychic',
+    category: SPECIAL,
+    effects: [
+      {
+        onHit: true,
+        probability: '10',
+        stages: {
+          'special-defense': {
+            value: '1',
+            type: 'decrease',
+          },
+        }
+      }
+    ],
   },
   'giga-drain': {
+    key: 'giga-drain',
     name: 'Giga Drain',
     pp: '5',
     power: '60',
     accuracy: '100',
     description: "Half of the HP drained from the target is added to the attacker's HP.",
     type: 'grass',
+    category: SPECIAL,
+    effects: [
+      {
+        onHit: true,
+        self: {
+          hp: {
+            key: 'turn.gave.damage',
+            scale: '0.5',
+            type: 'increase',
+          }
+        }
+      }
+    ]
   },
   'stun-spore': {
+    key: 'stun-spore',
     name: 'Stun Spore',
     pp: '30',
     power: '--',
     accuracy: '75',
     description: 'Special move that causes paralysis. The victim has a one-infour chance of immobility.',
     type: 'grass',
+    category: STATUS,
+    effects: {
+      opponent: {
+        status: {
+          nonVolatile: nonVolatile.PARALYSIS
+        },
+        probability: '75',
+      }
+    }
   },
   'leech-seed': {
+    key: 'leech-seed',
     name: 'Leech Seed',
     pp: '10',
     power: '--',
     accuracy: '90',
     description: "Plants a seed on the target Pokémon. It slowly drains the target's HP for the attacker.",
     type: 'grass',
+    category: STATUS,
+    conditionals: [
+      {
+        opponent: {
+          is: {
+            type: 'grass',
+          }
+        },
+        override: {
+          category: NO_EFFECT,
+        }
+      }
+    ],
+    effects: [
+      {
+        status: {
+          volatile: {
+            add: volatile.LEECH_SEED
+          }
+        },
+        probability: '90',
+      }
+    ]
   },
   'egg-bomb': {
+    key: 'egg-bomb',
     name: 'Egg Bomb',
     pp: '10',
     power: '100',
     accuracy: '75',
     description: 'A NORMAL-type attack. An egg is launched at the target. It may miss, however.',
     type: 'normal',
+    category: PHYSICAL,
   },
   confusion: {
+    key: 'confusion',
     name: 'Confusion',
     pp: '25',
     power: '50',
     accuracy: '100',
     description: 'A PSYCHIC-type attack. Has a one-in-ten chance of leaving the target confused.',
     type: 'psychic',
+    category: SPECIAL,
+    effects: [
+      {
+        probability: '10',
+        opponent: {
+          status: {
+            volatile: {
+              add: volatile.CONFUSION,
+            }
+          },
+        }
+      }
+    ]
   },
   nightmare: {
+    key: 'nightmare',
     name: 'Nightmare',
     pp: '15',
     power: '--',
-    accuracy: '100',
+    accuracy: '1000',
     description: 'A move that makes a sleeping target have bad dreams. The victim will steadily lose HP.',
     type: 'ghost',
+    category: NO_EFFECT,
+    conditionals: [
+      {
+        override: {
+          category: STATUS,
+        },
+        opponent: {
+          status: {
+            nonVolatile: nonVolatile.SLEEP
+          },
+        }
+      }
+    ],
+    effects: [
+      {
+        opponent: {
+          status: {
+            volatile: {
+              add: volatile.NIGHTMARE
+            },
+          },
+        }
+      }
+    ]
   },
   'sleep-powder': {
+    key: 'sleep-powder',
     name: 'Sleep Powder',
     pp: '15',
     power: '--',
     accuracy: '75',
     description: "Induces sleep. A Pokémon will stay asleep for several turns if an item isn't used to wake it.",
     type: 'grass',
+    category: STATUS,
+    effects: [
+      {
+        opponent: {
+          status: {
+            nonVolatile: nonVolatile.SLEEP,
+          },
+        },
+        probability: '75',
+      }
+    ]
   },
   bonemerang: {
+    key: 'bonemerang',
     name: 'Bonemerang',
     pp: '10',
     power: '50',
     accuracy: '90',
     description: 'A boomerang made of bone is thrown to inflict damage twice, on the way out and on return.',
     type: 'ground',
+    category: PHYSICAL,
+    hits: [{}, {}],
   },
   headbutt: {
+    key: 'headbutt',
     name: 'Headbutt',
     pp: '15',
     power: '70',
     accuracy: '100',
     description: 'A NORMAL-type attack. Has a one-in-three chance of making the target flinch if it hits.',
     type: 'normal',
+    category: PHYSICAL,
+    effects: [
+      {
+        probability: '30',
+        opponent: {
+          status: {
+            volatile: {
+              add: volatile.FLINCH,
+            },
+          },
+        }
+      }
+    ]
   },
   'icy-wind': {
+    key: 'icy-wind',
     name: 'Icy Wind',
     pp: '15',
     power: '55',
     accuracy: '95',
     description: "An ICE-type attack. It is guaranteed to reduce the target's SPEED if it hits.",
     type: 'ice',
+    category: SPECIAL,
+    effects: [
+      {
+        onHit: true,
+        opponent: {
+          stages: {
+            speed: {
+              value: '1',
+              type: 'decrease',
+            }
+          }
+        }
+      }
+    ]
   },
   'focus-energy': {
+    key: 'focus-energy',
     name: 'Focus Energy',
     pp: '30',
     power: '--',
     accuracy: '100',
     description: "Raises the likelihood of nailing the opponent's weak spot for a critical hit.",
     type: 'normal',
+    category: STATUS,
+    effects: [
+      {
+        self: {
+          stages: {
+            'critical-hit': {
+              value: '1',
+              type: 'increase',
+            }
+          }
+        }
+      }
+    ]
   },
   'bone-rush': {
+    key: 'bone-rush',
     name: 'Bone Rush',
     pp: '10',
     power: '25',
     accuracy: '80',
     description: 'A GROUND-type attack. The attacker uses a bone to club the foe two to five times.',
     type: 'ground',
+    category: PHYSICAL,
+    hits: [
+      {
+        probability: '100'
+      },
+      {
+        probability: '100'
+      },
+      {
+        probability: '62.5'
+      },
+      {
+        probability: '25'
+      },
+      {
+        probability: '12.5'
+      },
+    ]
   },
   thrash: {
+    key: 'thrash',
     name: 'Thrash',
     pp: '20',
     power: '90',
     accuracy: '100',
     description: 'An attack that lasts two to three turns. Afterwards, the attacker becomes confused.',
     type: 'normal',
+    category: PHYSICAL,
+    turns: [
+      {
+        category: PHYSICAL,
+        effects: [
+          {
+            self: {
+              status: {
+                volatile: {
+                  add: volatile.LOCKED,
+                },
+              },
+            }
+          }
+        ]
+      },
+      {
+        category: PHYSICAL,
+        effects: [
+          {
+            self: {
+              status: {
+                volatile: {
+                  remove: volatile.LOCKED,
+                  add: volatile.CONFUSION,
+                },
+              },
+            },
+            probability: '50',
+          }
+        ]
+      },
+      {
+        category: PHYSICAL,
+        effects: [
+          {
+            self: {
+              status: {
+                volatile: {
+                  remove: volatile.LOCKED,
+                  add: volatile.CONFUSION,
+                },
+              },
+            },
+            probability: '100',
+          }
+        ]
+      },
+    ]
   },
   thunderpunch: {
+    key: 'thunderpunch',
     name: 'ThunderPunch',
     pp: '15',
     power: '75',
     accuracy: '100',
     description: 'A special ELECTRIC-type attack. Has a one-in-ten shot at paralyzing the target.',
     type: 'electric',
+    category: SPECIAL,
+    effects: [
+      {
+        onHit: true,
+        opponent: {
+          status: {
+            nonVolatile: nonVolatile.PARALYSIS,
+          }
+        },
+        probability: '10',
+      }
+    ]
   },
   'hi-jump-kick': {
+    key: 'hi-jump-kick',
     name: 'Hi Jump Kick',
     pp: '20',
     power: '85',
@@ -200,6 +603,7 @@ export const moves = {
     type: 'fighting',
   },
   'mega-kick': {
+    key: 'mega-kick',
     name: 'Mega Kick',
     pp: '5',
     power: '120',
@@ -208,6 +612,7 @@ export const moves = {
     type: 'normal',
   },
   reversal: {
+    key: 'reversal',
     name: 'Reversal',
     pp: '15',
     power: '--',
@@ -216,6 +621,7 @@ export const moves = {
     type: 'fighting',
   },
   meditate: {
+    key: 'meditate',
     name: 'Meditate',
     pp: '40',
     power: '--',
@@ -224,6 +630,7 @@ export const moves = {
     type: 'psychic',
   },
   'mach-punch': {
+    key: 'mach-punch',
     name: 'Mach Punch',
     pp: '30',
     power: '40',
@@ -232,6 +639,7 @@ export const moves = {
     type: 'fighting',
   },
   strength: {
+    key: 'strength',
     name: 'Strength',
     pp: '15',
     power: '80',
@@ -240,6 +648,7 @@ export const moves = {
     type: 'normal',
   },
   'ice-punch': {
+    key: 'ice-punch',
     name: 'Ice Punch',
     pp: '15',
     power: '75',
@@ -248,6 +657,7 @@ export const moves = {
     type: 'ice',
   },
   counter: {
+    key: 'counter',
     name: 'Counter',
     pp: '20',
     power: '--',
@@ -256,6 +666,7 @@ export const moves = {
     type: 'fighting',
   },
   'hyper-beam': {
+    key: 'hyper-beam',
     name: 'Hyper Beam',
     pp: '5',
     power: '150',
@@ -264,6 +675,7 @@ export const moves = {
     type: 'normal',
   },
   'shadow-ball': {
+    key: 'shadow-ball',
     name: 'Shadow Ball',
     pp: '15',
     power: '80',
@@ -272,6 +684,7 @@ export const moves = {
     type: 'ghost',
   },
   surf: {
+    key: 'surf',
     name: 'Surf',
     pp: '15',
     power: '95',
@@ -280,6 +693,7 @@ export const moves = {
     type: 'water',
   },
   supersonic: {
+    key: 'supersonic',
     name: 'Supersonic',
     pp: '20',
     power: '--',
@@ -288,6 +702,7 @@ export const moves = {
     type: 'normal',
   },
   'sludge-bomb': {
+    key: 'sludge-bomb',
     name: 'Sludge Bomb',
     pp: '10',
     power: '90',
@@ -296,6 +711,7 @@ export const moves = {
     type: 'poison',
   },
   'fire-blast': {
+    key: 'fire-blast',
     name: 'Fire Blast',
     pp: '5',
     power: '120',
@@ -305,6 +721,7 @@ export const moves = {
   },
   // NOTE: Enemies defense is halved when calculating this damage
   explosion: {
+    key: 'explosion',
     name: 'Explosion',
     pp: '5',
     power: '250',
@@ -313,6 +730,7 @@ export const moves = {
     type: 'normal',
   },
   toxic: {
+    key: 'toxic',
     name: 'Toxic',
     pp: '10',
     power: '--',
@@ -321,6 +739,7 @@ export const moves = {
     type: 'poison',
   },
   sludge: {
+    key: 'sludge',
     name: 'Sludge',
     pp: '20',
     power: '65',
@@ -329,6 +748,7 @@ export const moves = {
     type: 'poison',
   },
   'zap-cannon': {
+    key: 'zap-cannon',
     name: 'Zap Cannon',
     pp: '5',
     power: '100',
@@ -337,6 +757,7 @@ export const moves = {
     type: 'electric',
   },
   haze: {
+    key: 'haze',
     name: 'Haze',
     pp: '30',
     power: '--',
@@ -345,6 +766,7 @@ export const moves = {
     type: 'ice',
   },
   earthquake: {
+    key: 'earthquake',
     name: 'Earthquake',
     pp: '10',
     power: '100',
@@ -353,6 +775,7 @@ export const moves = {
     type: 'ground',
   },
   rollout: {
+    key: 'rollout',
     name: 'Rollout',
     pp: '20',
     power: '30',
@@ -361,6 +784,7 @@ export const moves = {
     type: 'rock',
   },
   'iron-tail': {
+    key: 'iron-tail',
     name: 'Iron Tail',
     pp: '15',
     power: '100',
@@ -369,6 +793,7 @@ export const moves = {
     type: 'steel',
   },
   'scary-face': {
+    key: 'scary-face',
     name: 'Scary Face',
     pp: '10',
     power: '--',
@@ -377,6 +802,7 @@ export const moves = {
     type: 'normal',
   },
   dig: {
+    key: 'dig',
     name: 'Dig',
     pp: '10',
     power: '60',
@@ -385,6 +811,7 @@ export const moves = {
     type: 'ground',
   },
   stomp: {
+    key: 'stomp',
     name: 'Stomp',
     pp: '20',
     power: '65',
@@ -393,6 +820,7 @@ export const moves = {
     type: 'normal',
   },
   blizzard: {
+    key: 'blizzard',
     name: 'Blizzard',
     pp: '5',
     power: '120',
@@ -401,6 +829,7 @@ export const moves = {
     type: 'ice',
   },
   'dream-eater': {
+    key: 'dream-eater',
     name: 'Dream Eater',
     pp: '15',
     power: '100',
@@ -409,6 +838,7 @@ export const moves = {
     type: 'psychic',
   },
   sing: {
+    key: 'sing',
     name: 'Sing',
     pp: '15',
     power: '--',
@@ -417,6 +847,7 @@ export const moves = {
     type: 'normal',
   },
   thief: {
+    key: 'thief',
     name: 'Thief',
     pp: '10',
     power: '40',
@@ -425,6 +856,7 @@ export const moves = {
     type: 'dark',
   },
   growth: {
+    key: 'growth',
     name: 'Growth',
     pp: '40',
     power: '--',
@@ -433,6 +865,7 @@ export const moves = {
     type: 'normal',
   },
   'dizzy-punch': {
+    key: 'dizzy-punch',
     name: 'Dizzy Punch',
     pp: '10',
     power: '70',
@@ -441,6 +874,7 @@ export const moves = {
     type: 'normal',
   },
   bite: {
+    key: 'bite',
     name: 'Bite',
     pp: '25',
     power: '60',
@@ -449,6 +883,7 @@ export const moves = {
     type: 'dark',
   },
   leer: {
+    key: 'leer',
     name: 'Leer',
     pp: '30',
     power: '--',
@@ -457,6 +892,7 @@ export const moves = {
     type: 'normal',
   },
   'hydro-pump': {
+    key: 'hydro-pump',
     name: 'Hydro Pump',
     pp: '5',
     power: '120',
@@ -465,6 +901,7 @@ export const moves = {
     type: 'water',
   },
   smokescreen: {
+    key: 'smokescreen',
     name: 'SmokeScreen',
     pp: '20',
     power: '--',
@@ -473,6 +910,7 @@ export const moves = {
     type: 'normal',
   },
   dragonbreath: {
+    key: 'dragonbreath',
     name: 'DragonBreath',
     pp: '20',
     power: '60',
@@ -481,6 +919,7 @@ export const moves = {
     type: 'dragon',
   },
   'horn-attack': {
+    key: 'horn-attack',
     name: 'Horn Attack',
     pp: '25',
     power: '65',
@@ -489,6 +928,7 @@ export const moves = {
     type: 'normal',
   },
   'horn-drill': {
+    key: 'horn-drill',
     name: 'Horn Drill',
     pp: '5',
     power: '--',
@@ -497,6 +937,7 @@ export const moves = {
     type: 'normal',
   },
   waterfall: {
+    key: 'waterfall',
     name: 'Waterfall',
     pp: '15',
     power: '80',
@@ -505,6 +946,7 @@ export const moves = {
     type: 'water',
   },
   flail: {
+    key: 'flail',
     name: 'Flail',
     pp: '15',
     power: '--',
@@ -513,6 +955,7 @@ export const moves = {
     type: 'normal',
   },
   recover: {
+    key: 'recover',
     name: 'Recover',
     pp: '20',
     power: '--',
@@ -521,6 +964,7 @@ export const moves = {
     type: 'normal',
   },
   'rapid-spin': {
+    key: 'rapid-spin',
     name: 'Rapid Spin',
     pp: '40',
     power: '20',
@@ -529,6 +973,7 @@ export const moves = {
     type: 'normal',
   },
   harden: {
+    key: 'harden',
     name: 'Harden',
     pp: '30',
     power: '--',
@@ -537,6 +982,7 @@ export const moves = {
     type: 'normal',
   },
   psybeam: {
+    key: 'psybeam',
     name: 'Psybeam',
     pp: '20',
     power: '65',
@@ -545,6 +991,7 @@ export const moves = {
     type: 'psychic',
   },
   barrier: {
+    key: 'barrier',
     name: 'Barrier',
     pp: '30',
     power: '--',
@@ -553,6 +1000,7 @@ export const moves = {
     type: 'psychic',
   },
   'baton-pass': {
+    key: 'baton-pass',
     name: 'Baton Pass',
     pp: '40',
     power: '--',
@@ -561,6 +1009,7 @@ export const moves = {
     type: 'normal',
   },
   substitute: {
+    key: 'substitute',
     name: 'Substitute',
     pp: '10',
     power: '--',
@@ -569,6 +1018,7 @@ export const moves = {
     type: 'normal',
   },
   'wing-attack': {
+    key: 'wing-attack',
     name: 'Wing Attack',
     pp: '35',
     power: '60',
@@ -577,6 +1027,7 @@ export const moves = {
     type: 'flying',
   },
   pursuit: {
+    key: 'pursuit',
     name: 'Pursuit',
     pp: '20',
     power: '40',
@@ -585,6 +1036,7 @@ export const moves = {
     type: 'dark',
   },
   lick: {
+    key: 'lick',
     name: 'Lick',
     pp: '30',
     power: '20',
@@ -593,6 +1045,7 @@ export const moves = {
     type: 'ghost',
   },
   'mean-look': {
+    key: 'mean-look',
     name: 'Mean Look',
     pp: '5',
     power: '--',
@@ -601,6 +1054,7 @@ export const moves = {
     type: 'normal',
   },
   'light-screen': {
+    key: 'light-screen',
     name: 'Light Screen',
     pp: '30',
     power: '--',
@@ -609,6 +1063,7 @@ export const moves = {
     type: 'psychic',
   },
   'fire-punch': {
+    key: 'fire-punch',
     name: 'Fire Punch',
     pp: '15',
     power: '75',
@@ -617,6 +1072,7 @@ export const moves = {
     type: 'fire',
   },
   smog: {
+    key: 'smog',
     name: 'Smog',
     pp: '20',
     power: '20',
@@ -625,6 +1081,7 @@ export const moves = {
     type: 'poison',
   },
   'confuse-ray': {
+    key: 'confuse-ray',
     name: 'Confuse Ray',
     pp: '10',
     power: '--',
@@ -633,6 +1090,7 @@ export const moves = {
     type: 'ghost',
   },
   'fury-cutter': {
+    key: 'fury-cutter',
     name: 'Fury Cutter',
     pp: '20',
     power: '10',
@@ -641,6 +1099,7 @@ export const moves = {
     type: 'bug',
   },
   vicegrip: {
+    key: 'vicegrip',
     name: 'ViceGrip',
     pp: '30',
     power: '55',
@@ -649,6 +1108,7 @@ export const moves = {
     type: 'normal',
   },
   submission: {
+    key: 'submission',
     name: 'Submission',
     pp: '25',
     power: '80',
@@ -657,6 +1117,7 @@ export const moves = {
     type: 'fighting',
   },
   'take-down': {
+    key: 'take-down',
     name: 'Take Down',
     pp: '20',
     power: '90',
@@ -665,6 +1126,7 @@ export const moves = {
     type: 'normal',
   },
   'rock-smash': {
+    key: 'rock-smash',
     name: 'Rock Smash',
     pp: '15',
     power: '20',
@@ -673,6 +1135,7 @@ export const moves = {
     type: 'fighting',
   },
   tackle: {
+    key: 'tackle',
     name: 'Tackle',
     pp: '35',
     power: '35',
@@ -681,6 +1144,7 @@ export const moves = {
     type: 'normal',
   },
   splash: {
+    key: 'splash',
     name: 'Splash',
     pp: '40',
     power: '--',
@@ -689,6 +1153,7 @@ export const moves = {
     type: 'normal',
   },
   'dragon-rage': {
+    key: 'dragon-rage',
     name: 'Dragon Rage',
     pp: '10',
     power: '40',
@@ -697,6 +1162,7 @@ export const moves = {
     type: 'dragon',
   },
   twister: {
+    key: 'twister',
     name: 'Twister',
     pp: '20',
     power: '40',
@@ -705,6 +1171,7 @@ export const moves = {
     type: 'dragon',
   },
   whirlpool: {
+    key: 'whirlpool',
     name: 'Whirlpool',
     pp: '15',
     power: '15',
@@ -713,6 +1180,7 @@ export const moves = {
     type: 'water',
   },
   'perish-song': {
+    key: 'perish-song',
     name: 'Perish Song',
     pp: '5',
     power: '--',
@@ -721,6 +1189,7 @@ export const moves = {
     type: 'normal',
   },
   mist: {
+    key: 'mist',
     name: 'Mist',
     pp: '30',
     power: '--',
@@ -729,6 +1198,7 @@ export const moves = {
     type: 'ice',
   },
   transform: {
+    key: 'transform',
     name: 'Transform',
     pp: '10',
     power: '--',
@@ -737,6 +1207,7 @@ export const moves = {
     type: 'normal',
   },
   'sand-attack': {
+    key: 'sand-attack',
     name: 'Sand-Attack',
     pp: '15',
     power: '--',
@@ -745,6 +1216,7 @@ export const moves = {
     type: 'ground',
   },
   'quick-attack': {
+    key: 'quick-attack',
     name: 'Quick Attack',
     pp: '30',
     power: '40',
@@ -753,6 +1225,7 @@ export const moves = {
     type: 'normal',
   },
   'acid-armor': {
+    key: 'acid-armor',
     name: 'Acid Armor',
     pp: '40',
     power: '--',
@@ -761,6 +1234,7 @@ export const moves = {
     type: 'poison',
   },
   'pin-missile': {
+    key: 'pin-missile',
     name: 'Pin Missile',
     pp: '20',
     power: '14',
@@ -769,6 +1243,7 @@ export const moves = {
     type: 'bug',
   },
   'double-kick': {
+    key: 'double-kick',
     name: 'Double Kick',
     pp: '30',
     power: '30',
@@ -777,6 +1252,7 @@ export const moves = {
     type: 'fighting',
   },
   'tail-whip': {
+    key: 'tail-whip',
     name: 'Tail Whip',
     pp: '30',
     power: '--',
@@ -785,6 +1261,7 @@ export const moves = {
     type: 'normal',
   },
   'tri-attack': {
+    key: 'tri-attack',
     name: 'Tri Attack',
     pp: '10',
     power: '80',
@@ -793,6 +1270,7 @@ export const moves = {
     type: 'normal',
   },
   sharpen: {
+    key: 'sharpen',
     name: 'Sharpen',
     pp: '30',
     power: '--',
@@ -801,6 +1279,7 @@ export const moves = {
     type: 'normal',
   },
   'conversion-2': {
+    key: 'conversion-2',
     name: 'Conversion 2',
     pp: '30',
     power: '--',
@@ -809,6 +1288,7 @@ export const moves = {
     type: 'normal',
   },
   ancientpower: {
+    key: 'ancientpower',
     name: 'AncientPower',
     pp: '5',
     power: '60',
@@ -817,6 +1297,7 @@ export const moves = {
     type: 'rock',
   },
   protect: {
+    key: 'protect',
     name: 'Protect',
     pp: '10',
     power: '--',
@@ -825,6 +1306,7 @@ export const moves = {
     type: 'normal',
   },
   'water-gun': {
+    key: 'water-gun',
     name: 'Water Gun',
     pp: '25',
     power: '40',
@@ -833,6 +1315,7 @@ export const moves = {
     type: 'water',
   },
   'spike-cannon': {
+    key: 'spike-cannon',
     name: 'Spike Cannon',
     pp: '15',
     power: '20',
@@ -841,6 +1324,7 @@ export const moves = {
     type: 'normal',
   },
   attract: {
+    key: 'attract',
     name: 'Attract',
     pp: '15',
     power: '--',
@@ -849,6 +1333,7 @@ export const moves = {
     type: 'normal',
   },
   endure: {
+    key: 'endure',
     name: 'Endure',
     pp: '10',
     power: '--',
@@ -857,6 +1342,7 @@ export const moves = {
     type: 'normal',
   },
   curse: {
+    key: 'curse',
     name: 'curse',
     pp: '10',
     power: '--',
@@ -865,6 +1351,7 @@ export const moves = {
     type: 'ghost',
   },
   'defense-curl': {
+    key: 'defense-curl',
     name: 'Defense Curl',
     pp: '40',
     power: '--',
@@ -873,6 +1360,7 @@ export const moves = {
     type: 'normal',
   },
   peck: {
+    key: 'peck',
     name: 'Peck',
     pp: '35',
     power: '35',
@@ -881,6 +1369,7 @@ export const moves = {
     type: 'flying',
   },
   agility: {
+    key: 'agility',
     name: 'Agility',
     pp: '30',
     power: '--',
@@ -889,6 +1378,7 @@ export const moves = {
     type: 'psychic',
   },
   detect: {
+    key: 'detect',
     name: 'Detect',
     pp: '5',
     power: '--',
@@ -897,6 +1387,7 @@ export const moves = {
     type: 'fighting',
   },
   'sky-attack': {
+    key: 'sky-attack',
     name: 'Sky Attack',
     pp: '5',
     power: '140',
@@ -905,6 +1396,7 @@ export const moves = {
     type: 'flying',
   },
   roar: {
+    key: 'roar',
     name: 'Roar',
     pp: '20',
     power: '--',
@@ -913,6 +1405,7 @@ export const moves = {
     type: 'normal',
   },
   outrage: {
+    key: 'outrage',
     name: 'Outrage',
     pp: '15',
     power: '90',
@@ -921,6 +1414,7 @@ export const moves = {
     type: 'dragon',
   },
   safeguard: {
+    key: 'safeguard',
     name: 'Safeguard',
     pp: '25',
     power: '--',
@@ -929,14 +1423,16 @@ export const moves = {
     type: 'normal',
   },
   'thunder-wave': {
+    key: 'thunder-wave',
     name: 'Thunder Wave',
     pp: '20',
     power: '--',
     accuracy: '100',
-    description: 'A special move that causes paralysis. The victim has a onein-four chance of immobility.',
+    description: 'A special move that causes paralysis. The victim has a one-in-four chance of immobility.',
     type: 'electric',
   },
   metronome: {
+    key: 'metronome',
     name: 'Metronome',
     pp: '10',
     power: '--',
@@ -945,6 +1441,7 @@ export const moves = {
     type: 'normal',
   },
   'body-slam': {
+    key: 'body-slam',
     name: 'Body Slam',
     pp: '15',
     power: '85',
@@ -953,6 +1450,7 @@ export const moves = {
     type: 'normal',
   },
   'razor-leaf': {
+    key: 'razor-leaf',
     name: 'Razor Leaf',
     pp: '25',
     power: '55',
@@ -961,6 +1459,7 @@ export const moves = {
     type: 'grass',
   },
   synthesis: {
+    key: 'synthesis',
     name: 'Synthesis',
     pp: '5',
     power: '--',
@@ -969,6 +1468,7 @@ export const moves = {
     type: 'grass',
   },
   solarbeam: {
+    key: 'solarbeam',
     name: 'SolarBeam',
     pp: '10',
     power: '120',
@@ -977,6 +1477,7 @@ export const moves = {
     type: 'grass',
   },
   poisonpowder: {
+    key: 'poisonpowder',
     name: 'PoisonPowder',
     pp: '35',
     power: '--',
@@ -985,6 +1486,7 @@ export const moves = {
     type: 'poison',
   },
   reflect: {
+    key: 'reflect',
     name: 'Reflect',
     pp: '20',
     power: '--',
@@ -993,6 +1495,7 @@ export const moves = {
     type: 'psychic',
   },
   flamethrower: {
+    key: 'flamethrower',
     name: 'Flamethrower',
     pp: '15',
     power: '95',
@@ -1001,6 +1504,7 @@ export const moves = {
     type: 'fire',
   },
   'sunny-day': {
+    key: 'sunny-day',
     name: 'Sunny Day',
     pp: '5',
     power: '--',
@@ -1009,6 +1513,7 @@ export const moves = {
     type: 'fire',
   },
   'flame-wheel': {
+    key: 'flame-wheel',
     name: 'Flame Wheel',
     pp: '25',
     power: '60',
@@ -1017,6 +1522,7 @@ export const moves = {
     type: 'fire',
   },
   slash: {
+    key: 'slash',
     name: 'Slash',
     pp: '20',
     power: '70',
@@ -1025,6 +1531,7 @@ export const moves = {
     type: 'normal',
   },
   screech: {
+    key: 'screech',
     name: 'Screech',
     pp: '40',
     power: '--',
@@ -1033,6 +1540,7 @@ export const moves = {
     type: 'normal',
   },
   dynamicpunch: {
+    key: 'dynamicpunch',
     name: 'DynamicPunch',
     pp: '5',
     power: '100',
@@ -1041,6 +1549,7 @@ export const moves = {
     type: 'fighting',
   },
   amnesia: {
+    key: 'amnesia',
     name: 'Amnesia',
     pp: '20',
     power: '--',
@@ -1049,6 +1558,7 @@ export const moves = {
     type: 'psychic',
   },
   fly: {
+    key: 'fly',
     name: 'Fly',
     pp: '15',
     power: '70',
@@ -1057,6 +1567,7 @@ export const moves = {
     type: 'flying',
   },
   hypnosis: {
+    key: 'hypnosis',
     name: 'Hypnosis',
     pp: '20',
     power: '--',
@@ -1065,6 +1576,7 @@ export const moves = {
     type: 'psychic',
   },
   foresight: {
+    key: 'foresight',
     name: 'Foresight',
     pp: '40',
     power: '--',
@@ -1073,6 +1585,7 @@ export const moves = {
     type: 'normal',
   },
   'double-edge': {
+    key: 'double-edge',
     name: 'Double-Edge',
     pp: '15',
     power: '120',
@@ -1081,6 +1594,7 @@ export const moves = {
     type: 'normal',
   },
   'leech-life': {
+    key: 'leech-life',
     name: 'Leech Life',
     pp: '15',
     power: '20',
@@ -1089,6 +1603,7 @@ export const moves = {
     type: 'bug',
   },
   'night-shade': {
+    key: 'night-shade',
     name: 'Night Shade',
     pp: '15',
     power: '--',
@@ -1097,6 +1612,7 @@ export const moves = {
     type: 'ghost',
   },
   'spider-web': {
+    key: 'spider-web',
     name: 'Spider Web',
     pp: '10',
     power: '--',
@@ -1105,6 +1621,7 @@ export const moves = {
     type: 'bug',
   },
   spark: {
+    key: 'spark',
     name: 'Spark',
     pp: '20',
     power: '65',
@@ -1113,6 +1630,7 @@ export const moves = {
     type: 'electric',
   },
   'sweet-kiss': {
+    key: 'sweet-kiss',
     name: 'Sweet Kiss',
     pp: '10',
     power: '--',
@@ -1121,6 +1639,7 @@ export const moves = {
     type: 'normal',
   },
   encore: {
+    key: 'encore',
     name: 'Encore',
     pp: '5',
     power: '--',
@@ -1129,6 +1648,7 @@ export const moves = {
     type: 'normal',
   },
   charm: {
+    key: 'charm',
     name: 'Charm',
     pp: '20',
     power: '--',
@@ -1137,6 +1657,7 @@ export const moves = {
     type: 'normal',
   },
   'future-sight': {
+    key: 'future-sight',
     name: 'Future Sight',
     pp: '15',
     power: '80',
@@ -1145,6 +1666,7 @@ export const moves = {
     type: 'psychic',
   },
   'cotton-spore': {
+    key: 'cotton-spore',
     name: 'Cotton Spore',
     pp: '40',
     power: '--',
@@ -1153,6 +1675,7 @@ export const moves = {
     type: 'grass',
   },
   'petal-dance': {
+    key: 'petal-dance',
     name: 'Petal Dance',
     pp: '20',
     power: '70',
@@ -1161,6 +1684,7 @@ export const moves = {
     type: 'grass',
   },
   cut: {
+    key: 'cut',
     name: 'Cut',
     pp: '30',
     power: '50',
@@ -1169,6 +1693,7 @@ export const moves = {
     type: 'normal',
   },
   swagger: {
+    key: 'swagger',
     name: 'Swagger',
     pp: '15',
     power: '--',
@@ -1177,6 +1702,7 @@ export const moves = {
     type: 'normal',
   },
   'rock-slide': {
+    key: 'rock-slide',
     name: 'Rock Slide',
     pp: '10',
     power: '75',
@@ -1185,6 +1711,7 @@ export const moves = {
     type: 'rock',
   },
   mimic: {
+    key: 'mimic',
     name: 'Mimic',
     pp: '10',
     power: '--',
@@ -1193,6 +1720,7 @@ export const moves = {
     type: 'normal',
   },
   'mega-drain': {
+    key: 'mega-drain',
     name: 'Mega Drain',
     pp: '10',
     power: '40',
@@ -1201,6 +1729,7 @@ export const moves = {
     type: 'grass',
   },
   'double-team': {
+    key: 'double-team',
     name: 'Double Team',
     pp: '15',
     power: '--',
@@ -1209,6 +1738,7 @@ export const moves = {
     type: 'normal',
   },
   slam: {
+    key: 'slam',
     name: 'Slam',
     pp: '20',
     power: '80',
@@ -1217,6 +1747,7 @@ export const moves = {
     type: 'normal',
   },
   'psych-up': {
+    key: 'psych-up',
     name: 'Psych Up',
     pp: '10',
     power: '--',
@@ -1225,6 +1756,7 @@ export const moves = {
     type: 'normal',
   },
   'faint-attack': {
+    key: 'faint-attack',
     name: 'Faint Attack',
     pp: '20',
     power: '60',
@@ -1233,6 +1765,7 @@ export const moves = {
     type: 'dark',
   },
   disable: {
+    key: 'disable',
     name: 'Disable',
     pp: '20',
     power: '--',
@@ -1241,6 +1774,7 @@ export const moves = {
     type: 'normal',
   },
   growl: {
+    key: 'growl',
     name: 'Growl',
     pp: '40',
     power: '--',
@@ -1249,6 +1783,7 @@ export const moves = {
     type: 'normal',
   },
   psywave: {
+    key: 'psywave',
     name: 'Psywave',
     pp: '15',
     power: '--',
@@ -1257,6 +1792,7 @@ export const moves = {
     type: 'psychic',
   },
   'pain-split': {
+    key: 'pain-split',
     name: 'Pain Split',
     pp: '20',
     power: '--',
@@ -1265,6 +1801,7 @@ export const moves = {
     type: 'normal',
   },
   'hidden-power': {
+    key: 'hidden-power',
     name: 'Hidden Power',
     pp: '15',
     power: '--',
@@ -1273,6 +1810,7 @@ export const moves = {
     type: 'normal',
   },
   'destiny-bond': {
+    key: 'destiny-bond',
     name: 'Destiny Bond',
     pp: '5',
     power: '--',
@@ -1281,6 +1819,7 @@ export const moves = {
     type: 'ghost',
   },
   crunch: {
+    key: 'crunch',
     name: 'Crunch',
     pp: '15',
     power: '80',
@@ -1289,6 +1828,7 @@ export const moves = {
     type: 'dark',
   },
   spikes: {
+    key: 'spikes',
     name: 'Spikes',
     pp: '20',
     power: '--',
@@ -1297,6 +1837,7 @@ export const moves = {
     type: 'ground',
   },
   sandstorm: {
+    key: 'sandstorm',
     name: 'Sandstorm',
     pp: '10',
     power: '--',
@@ -1305,6 +1846,7 @@ export const moves = {
     type: 'rock',
   },
   glare: {
+    key: 'glare',
     name: 'Glare',
     pp: '30',
     power: '--',
@@ -1313,6 +1855,7 @@ export const moves = {
     type: 'normal',
   },
   guillotine: {
+    key: 'guillotine',
     name: 'Guillotine',
     pp: '5',
     power: '--',
@@ -1321,6 +1864,7 @@ export const moves = {
     type: 'normal',
   },
   'mud-slap': {
+    key: 'mud-slap',
     name: 'Mud-Slap',
     pp: '10',
     power: '20',
@@ -1329,6 +1873,7 @@ export const moves = {
     type: 'ground',
   },
   'rock-throw': {
+    key: 'rock-throw',
     name: 'Rock Throw',
     pp: '15',
     power: '50',
@@ -1337,6 +1882,7 @@ export const moves = {
     type: 'rock',
   },
   minimize: {
+    key: 'minimize',
     name: 'Minimize',
     pp: '20',
     power: '--',
@@ -1345,6 +1891,7 @@ export const moves = {
     type: 'normal',
   },
   'metal-claw': {
+    key: 'metal-claw',
     name: 'Metal Claw',
     pp: '35',
     power: '50',
@@ -1353,6 +1900,7 @@ export const moves = {
     type: 'steel',
   },
   bide: {
+    key: 'bide',
     name: 'Bide',
     pp: '10',
     power: '--',
@@ -1361,6 +1909,7 @@ export const moves = {
     type: 'normal',
   },
   megahorn: {
+    key: 'megahorn',
     name: 'Megahorn',
     pp: '10',
     power: '120',
@@ -1369,6 +1918,7 @@ export const moves = {
     type: 'bug',
   },
   'beat-up': {
+    key: 'beat-up',
     name: 'Beat Up',
     pp: '10',
     power: '10',
@@ -1377,6 +1927,7 @@ export const moves = {
     type: 'dark',
   },
   snore: {
+    key: 'snore',
     name: 'Snore',
     pp: '15',
     power: '40',
@@ -1385,6 +1936,7 @@ export const moves = {
     type: 'normal',
   },
   rest: {
+    key: 'rest',
     name: 'Rest',
     pp: '10',
     power: '--',
@@ -1393,6 +1945,7 @@ export const moves = {
     type: 'psychic',
   },
   'fury-attack': {
+    key: 'fury-attack',
     name: 'Fury Attack',
     pp: '20',
     power: '15',
@@ -1401,6 +1954,7 @@ export const moves = {
     type: 'normal',
   },
   'ice-beam': {
+    key: 'ice-beam',
     name: 'Ice Beam',
     pp: '10',
     power: '95',
@@ -1409,6 +1963,7 @@ export const moves = {
     type: 'ice',
   },
   'lock-on': {
+    key: 'lock-on',
     name: 'Lock-On',
     pp: '5',
     power: '--',
@@ -1417,6 +1972,7 @@ export const moves = {
     type: 'normal',
   },
   octazooka: {
+    key: 'octazooka',
     name: 'Octazooka',
     pp: '10',
     power: '65',
@@ -1425,6 +1981,7 @@ export const moves = {
     type: 'water',
   },
   present: {
+    key: 'present',
     name: 'Present',
     pp: '15',
     power: '--',
@@ -1433,6 +1990,7 @@ export const moves = {
     type: 'normal',
   },
   'steel-wing': {
+    key: 'steel-wing',
     name: 'Steel Wing',
     pp: '25',
     power: '70',
@@ -1441,14 +1999,16 @@ export const moves = {
     type: 'steel',
   },
   ember: {
+    key: 'ember',
     name: 'Ember',
     pp: '25',
     power: '40',
     accuracy: '100',
-    description: 'A FIRE-type attack. Has a onein-ten chance of leaving the target with a damaging burn.',
+    description: 'A FIRE-type attack. Has a one-in-ten chance of leaving the target with a damaging burn.',
     type: 'fire',
   },
   frustration: {
+    key: 'frustration',
     name: 'Frustration',
     pp: '20',
     power: '--',
@@ -1457,6 +2017,7 @@ export const moves = {
     type: 'normal',
   },
   conversion: {
+    key: 'conversion',
     name: 'Conversion',
     pp: '30',
     power: '--',
@@ -1465,6 +2026,7 @@ export const moves = {
     type: 'normal',
   },
   'triple-kick': {
+    key: 'triple-kick',
     name: 'Triple Kick',
     pp: '10',
     power: '10',
@@ -1473,6 +2035,7 @@ export const moves = {
     type: 'fighting',
   },
   thunderbolt: {
+    key: 'thunderbolt',
     name: 'Thunderbolt',
     pp: '15',
     power: '95',
@@ -1481,6 +2044,7 @@ export const moves = {
     type: 'electric',
   },
   'heal-bell': {
+    key: 'heal-bell',
     name: 'Heal Bell',
     pp: '5',
     power: '--',
@@ -1489,6 +2053,7 @@ export const moves = {
     type: 'normal',
   },
   bubblebeam: {
+    key: 'bubblebeam',
     name: 'BubbleBeam',
     pp: '20',
     power: '65',
@@ -1497,6 +2062,7 @@ export const moves = {
     type: 'water',
   },
   gust: {
+    key: 'gust',
     name: 'Gust',
     pp: '35',
     power: '40',
@@ -1505,6 +2071,7 @@ export const moves = {
     type: 'flying',
   },
   withdraw: {
+    key: 'withdraw',
     name: 'Withdraw',
     pp: '40',
     power: '--',
@@ -1513,6 +2080,7 @@ export const moves = {
     type: 'water',
   },
   'string-shot': {
+    key: 'string-shot',
     name: 'String Shot',
     pp: '40',
     power: '--',
@@ -1521,6 +2089,7 @@ export const moves = {
     type: 'bug',
   },
   'poison-sting': {
+    key: 'poison-sting',
     name: 'Poison Sting',
     pp: '35',
     power: '15',
@@ -1529,6 +2098,7 @@ export const moves = {
     type: 'poison',
   },
   twineedle: {
+    key: 'twineedle',
     name: 'Twineedle',
     pp: '20',
     power: '25',
@@ -1537,6 +2107,7 @@ export const moves = {
     type: 'bug',
   },
   return: {
+    key: 'return',
     name: 'Return',
     pp: '20',
     power: '--',
@@ -1545,6 +2116,7 @@ export const moves = {
     type: 'normal',
   },
   'mirror-move': {
+    key: 'mirror-move',
     name: 'Mirror Move',
     pp: '20',
     power: '--',
@@ -1553,6 +2125,7 @@ export const moves = {
     type: 'flying',
   },
   whirlwind: {
+    key: 'whirlwind',
     name: 'Whirlwind',
     pp: '20',
     power: '--',
@@ -1561,6 +2134,7 @@ export const moves = {
     type: 'normal',
   },
   'super-fang': {
+    key: 'super-fang',
     name: 'Super Fang',
     pp: '10',
     power: '--',
@@ -1569,6 +2143,7 @@ export const moves = {
     type: 'normal',
   },
   'hyper-fang': {
+    key: 'hyper-fang',
     name: 'Hyper Fang',
     pp: '15',
     power: '80',
@@ -1577,6 +2152,7 @@ export const moves = {
     type: 'normal',
   },
   'drill-peck': {
+    key: 'drill-peck',
     name: 'Drill Peck',
     pp: '20',
     power: '80',
@@ -1585,6 +2161,7 @@ export const moves = {
     type: 'flying',
   },
   'fury-swipes': {
+    key: 'fury-swipes',
     name: 'Fury Swipes',
     pp: '15',
     power: '18',
@@ -1593,6 +2170,7 @@ export const moves = {
     type: 'normal',
   },
   moonlight: {
+    key: 'moonlight',
     name: 'Moonlight',
     pp: '5',
     power: '--',
@@ -1601,6 +2179,7 @@ export const moves = {
     type: 'normal',
   },
   acid: {
+    key: 'acid',
     name: 'Acid',
     pp: '30',
     power: '40',
@@ -1609,6 +2188,7 @@ export const moves = {
     type: 'poison',
   },
   'sweet-scent': {
+    key: 'sweet-scent',
     name: 'Sweet Scent',
     pp: '20',
     power: '--',
@@ -1617,6 +2197,7 @@ export const moves = {
     type: 'normal',
   },
   spore: {
+    key: 'spore',
     name: 'Spore',
     pp: '15',
     power: '--',
@@ -1625,6 +2206,7 @@ export const moves = {
     type: 'grass',
   },
   fissure: {
+    key: 'fissure',
     name: 'Fissure',
     pp: '5',
     power: '--',
@@ -1633,6 +2215,7 @@ export const moves = {
     type: 'ground',
   },
   magnitude: {
+    key: 'magnitude',
     name: 'Magnitude',
     pp: '30',
     power: '--',
@@ -1641,6 +2224,7 @@ export const moves = {
     type: 'ground',
   },
   'cross-chop': {
+    key: 'cross-chop',
     name: 'Cross Chop',
     pp: '5',
     power: '100',
@@ -1649,6 +2233,7 @@ export const moves = {
     type: 'fighting',
   },
   extremespeed: {
+    key: 'extremespeed',
     name: 'ExtremeSpeed',
     pp: '5',
     power: '80',
@@ -1657,6 +2242,7 @@ export const moves = {
     type: 'normal',
   },
   'belly-drum': {
+    key: 'belly-drum',
     name: 'Belly Drum',
     pp: '10',
     power: '--',
@@ -1665,6 +2251,7 @@ export const moves = {
     type: 'normal',
   },
   doubleslap: {
+    key: 'doubleslap',
     name: 'DoubleSlap',
     pp: '10',
     power: '15',
@@ -1673,6 +2260,7 @@ export const moves = {
     type: 'normal',
   },
   'mind-reader': {
+    key: 'mind-reader',
     name: 'Mind Reader',
     pp: '5',
     power: '--',
@@ -1681,6 +2269,7 @@ export const moves = {
     type: 'normal',
   },
   kinesis: {
+    key: 'kinesis',
     name: 'Kinesis',
     pp: '15',
     power: '--',
@@ -1689,6 +2278,7 @@ export const moves = {
     type: 'psychic',
   },
   'seismic-toss': {
+    key: 'seismic-toss',
     name: 'Seismic Toss',
     pp: '20',
     power: '--',
@@ -1697,6 +2287,7 @@ export const moves = {
     type: 'fighting',
   },
   'vital-throw': {
+    key: 'vital-throw',
     name: 'Vital Throw',
     pp: '10',
     power: '70',
@@ -1705,6 +2296,7 @@ export const moves = {
     type: 'fighting',
   },
   wrap: {
+    key: 'wrap',
     name: 'Wrap',
     pp: '20',
     power: '15',
@@ -1713,6 +2305,7 @@ export const moves = {
     type: 'normal',
   },
   'fire-spin': {
+    key: 'fire-spin',
     name: 'Fire Spin',
     pp: '15',
     power: '15',
@@ -1721,6 +2314,7 @@ export const moves = {
     type: 'fire',
   },
   'swords-dance': {
+    key: 'swords-dance',
     name: 'Swords Dance',
     pp: '30',
     power: '--',
@@ -1729,6 +2323,7 @@ export const moves = {
     type: 'normal',
   },
   'aurora-beam': {
+    key: 'aurora-beam',
     name: 'Aurora Beam',
     pp: '20',
     power: '65',
@@ -1737,6 +2332,7 @@ export const moves = {
     type: 'ice',
   },
   'sleep-talk': {
+    key: 'sleep-talk',
     name: 'Sleep Talk',
     pp: '10',
     power: '--',
@@ -1745,6 +2341,7 @@ export const moves = {
     type: 'normal',
   },
   clamp: {
+    key: 'clamp',
     name: 'Clamp',
     pp: '10',
     power: '35',
@@ -1753,6 +2350,7 @@ export const moves = {
     type: 'water',
   },
   spite: {
+    key: 'spite',
     name: 'Spite',
     pp: '10',
     power: '--',
@@ -1761,6 +2359,7 @@ export const moves = {
     type: 'ghost',
   },
   crabhammer: {
+    key: 'crabhammer',
     name: 'Crabhammer',
     pp: '10',
     power: '90',

@@ -70,9 +70,10 @@ class App extends Component {
     switch (route) {
       case routes.HOME:
         return <Home goTo={this.goTo} joinLobby={this.joinLobby} />;
-      // return <Lobby lobbyId={'MlLFKYQhR6r8gA08xJlI'} />;
-      // return <Login />;
-      // return <SelectPartyPokemon />;
+        // return <Lobby lobbyId={'MlLFKYQhR6r8gA08xJlI'} />;
+        // return <Login />;
+        // return <SelectPartyPokemon />;
+        // return <Loading />;
       case routes.LOGIN:
         return <Login />;
       case routes.LOBBY:
